@@ -29,18 +29,18 @@ export function addImageUrlFilter(eleventyConfig, filterName, zones) {
     const data = getImageData(src, zones);
 
     // Get the image data from the imdexer
-    const imageData = data.imdexer[data.imageSrc];
-    if (!imageData) {
+    const imdexerImageData = data.imdexer[data.imageSrc];
+    if (!imdexerImageData) {
       throw new Error(`Missing image data for image: ${data.imageSrc}`);
     }
 
     // If this is a single (non-grouped) image, return the image URL
-    if (!data.files) {
+    if (!imdexerImageData.files) {
       return joinPosixPath(data.baseUrl, data.imageSrc);
     }
     
     // If we are here, this is a grouped image, so return the image URL for the largest image in the group
-    const largestImageRecord = Object.entries(data.files).reduce((a, b) => a[1].width > b[1].width ? a : b);
+    const largestImageRecord = Object.entries(imdexerImageData.files).reduce((a, b) => a[1].width > b[1].width ? a : b);
     return joinPosixPath(data.baseUrl, largestImageRecord[0]);
   };
 
