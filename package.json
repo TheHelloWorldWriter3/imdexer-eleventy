@@ -1,7 +1,7 @@
 {
   "name": "imdexer-eleventy",
   "description": "An Eleventy plugin that generates optimized, responsive <img> tags using imdexer JSON data, configured by zone (local, CDN, etc.). Automatically sets srcset, sizes, width, and height to prevent layout shifts (CLS).",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "main": ".eleventy.js",
   "type": "module",
   "repository": {

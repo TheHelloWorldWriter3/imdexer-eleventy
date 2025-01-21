@@ -29,9 +29,9 @@ export function addImageUrlFilter(eleventyConfig, filterName, zones) {
     const data = getImageData(src, zones);
 
     // Get the image data from the imdexer
-    const imageData = data.imdexer[src];
+    const imageData = data.imdexer[data.imageSrc];
     if (!imageData) {
-      throw new Error(`Missing image data for image: ${src}`);
+      throw new Error(`Missing image data for image: ${data.imageSrc}`);
     }
 
     // If this is a single (non-grouped) image, return the image URL
