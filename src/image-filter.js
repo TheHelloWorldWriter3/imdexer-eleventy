@@ -10,10 +10,10 @@ import { joinPosixPath, getImageData } from './utils.js';
 
 /**
  * Adds the specified imageUrl filter to Eleventy.
- * 
- * @param {object} eleventyConfig The Eleventy configuration object.
+ *
+ * @param {{ addFilter: Function }} eleventyConfig The Eleventy configuration object.
  * @param {string} filterName The name of the filter.
- * @param {Array} zones The array of image zones.
+ * @param {Array<import('./utils.js').ImageZone>} zones The array of image zones.
  */
 export function addImageUrlFilter(eleventyConfig, filterName, zones) {
   /**
@@ -26,6 +26,7 @@ export function addImageUrlFilter(eleventyConfig, filterName, zones) {
    */
   const imageUrl = function(src) {
     // Get the image data based on the available zones
+    /** @type {import('./utils.js').ImageData} */
     const data = getImageData(src, zones);
 
     // Get the image data from the imdexer

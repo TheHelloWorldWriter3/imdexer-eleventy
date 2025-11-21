@@ -7,9 +7,30 @@
 // @ts-check
 
 /**
+ * @typedef {Object} ImdexerImageData
+ * @property {number} [width] The width of the image (for single images).
+ * @property {number} [height] The height of the image (for single images).
+ * @property {Object<string, {width: number, height: number}>} [files] The files object for grouped images.
+ */
+
+/**
+ * @typedef {Object} ImageZone
+ * @property {string} [prefix] The prefix for the image source.
+ * @property {Object<string, ImdexerImageData>} imdexer The imdexer object containing data for the images.
+ * @property {string} baseUrl The base URL for the images.
+ */
+
+/**
+ * @typedef {Object} ImageData
+ * @property {string} imageSrc The image source without prefix.
+ * @property {Object<string, ImdexerImageData>} imdexer The imdexer object containing data for the images.
+ * @property {string} baseUrl The base URL for the images.
+ */
+
+/**
  * Joins two paths using the POSIX path separator, ensuring that there is only one separator
  * between them.
- * 
+ *
  * @param {string} path1 The first path.
  * @param {string} path2 The second path.
  * @returns {string} The joined path.
@@ -21,10 +42,10 @@ export function joinPosixPath(path1, path2) {
 
 /**
  * Gets the image data for the specified image source based on the available zones.
- * 
+ *
  * @param {string} src The source of the image.
- * @param {Array} zones The array of image zones.
- * @returns {Object} The image data object containing the image source, imdexer, and base URL.
+ * @param {Array<ImageZone>} zones The array of image zones.
+ * @returns {ImageData} The image data object containing the image source, imdexer, and base URL.
  */
 export function getImageData(src, zones) {
 
@@ -39,7 +60,7 @@ export function getImageData(src, zones) {
 
   // Otherwise, find the zone that matches the image source based on the prefix, and return its data
   for (const zone of zones) {
-    if (src.startsWith(zone.prefix)) {
+    if (zone.prefix && src.startsWith(zone.prefix)) {
       return {
         imageSrc: src.slice(zone.prefix.length), // Remove the prefix from the image source
         imdexer: zone.imdexer,

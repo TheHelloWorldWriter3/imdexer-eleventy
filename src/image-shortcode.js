@@ -10,23 +10,34 @@ import { PACKAGE_NAME } from './consts.js';
 import { joinPosixPath, getImageData } from './utils.js';
 
 /**
+ * @typedef {Object} ShortcodeArgs
+ * @property {string} src The image source.
+ * @property {string} alt The alt attribute for the image.
+ * @property {string} [class] The class attribute for the image.
+ * @property {boolean} [lazy] Whether to use lazy loading for the image.
+ * @property {string} [sizes] The sizes attribute for the image.
+ * @property {number} [defaultImageWidth] The width of the default image to use for the src attribute.
+ */
+
+/**
  * Adds the specified image shortcode to Eleventy.
- * 
- * @param {object} eleventyConfig The Eleventy configuration object.
+ *
+ * @param {{ addShortcode: Function }} eleventyConfig The Eleventy configuration object.
  * @param {string} shortcodeName The name of the shortcode.
- * @param {Array} zones The array of image zones.
+ * @param {Array<import('./utils.js').ImageZone>} zones The array of image zones.
  */
 export function addImageShortcode(eleventyConfig, shortcodeName, zones) {
 
   /**
    * Returns the content for the image shortcode, which is a HTML image tag with attributes
    * computed from the provided arguments.
-   * @param {object} args The arguments for the shortcode.
+   * @param {ShortcodeArgs} args The arguments for the shortcode.
    * @returns {string} The HTML image tag.
    */
   const imageShortcode = function (args) {
 
     // Get the image data based on the optional prefix and available zones
+    /** @type {import('./utils.js').ImageData} */
     const data = getImageData(args.src, zones);
 
     // Generate and return the HTML image tag
@@ -41,11 +52,11 @@ export function addImageShortcode(eleventyConfig, shortcodeName, zones) {
  * @typedef {Object} ImageTagOptions
  * @property {string} alt The alt attribute for the image.
  * @property {string} baseUrl The base URL for the images.
- * @property {string} classAttr The class attribute for the image.
- * @property {number} defaultImageWidth The width of the default image to use for the src attribute.
- * @property {Object} imdexer The imdexer object containing data for the images.
- * @property {boolean} lazy Whether to use lazy loading for the image.
- * @property {string} sizes The sizes attribute for the image.
+ * @property {string} [classAttr] The class attribute for the image.
+ * @property {number} [defaultImageWidth] The width of the default image to use for the src attribute.
+ * @property {Object<string, import('./utils.js').ImdexerImageData>} imdexer The imdexer object containing data for the images.
+ * @property {boolean} [lazy] Whether to use lazy loading for the image.
+ * @property {string} [sizes] The sizes attribute for the image.
  * @property {string} src The source of the image.
  */
 
@@ -94,23 +105,24 @@ function generateImageTag({ alt, baseUrl, classAttr, defaultImageWidth, imdexer,
   }
 
   // If we are here, this is a grouped image, so let's generate a responsive image tag
+  const files = data.files;
 
   // Generate the srcset attribute
-  const srcset = Object.keys(data.files).map(file => {
+  const srcset = Object.keys(files).map(file => {
     const fullSrc = joinPosixPath(baseUrl, file);
-    return `${fullSrc} ${data.files[file].width}w`;
+    return `${fullSrc} ${files[file].width}w`;
   }).join(', ');
 
   // If defaultImageWidth is provided, find the image with that width
   let defaultImageRecord;
   if (defaultImageWidth) {
-    defaultImageRecord = Object.entries(data.files).find(([_, value]) => value.width === defaultImageWidth);
+    defaultImageRecord = Object.entries(files).find(([_, value]) => value.width === defaultImageWidth);
     if (!defaultImageRecord) {
       throw new Error(`No image found with width ${defaultImageWidth} for image: ${src}`);
     }
   } else {
     // Otherwise, find the largest image based on the width
-    defaultImageRecord = Object.entries(data.files).reduce((a, b) => a[1].width > b[1].width ? a : b);
+    defaultImageRecord = Object.entries(files).reduce((a, b) => a[1].width > b[1].width ? a : b);
   }
 
   // Get the full source of the default image
